@@ -1,0 +1,52 @@
+# From https://github.com/xRealNeon/VuePagesAction/blob/main/action.yml
+
+name: 'Simple Github Pages Deployment'
+branding:
+  icon: 'activity'  
+  color: 'blue'
+description: 'Simple action to deploy simple projects in simple directories to Github Pages environment.'
+inputs:
+  username:
+    description: 'Your Username or Organization name'
+    required: true
+  reponame:
+    description: 'Your reponame'
+    required: true
+  token:
+    description: 'Your Github token'
+    required: true
+  gitemail:
+    description: 'Your git commit email'
+    required: false
+    default: 'CI@example.com'
+  gitname:
+    description: 'Your git commit name'
+    required: false
+    default: 'CI'
+  gitmsg:
+    description: 'Your git commit message'
+    required: false
+    default: 'Deploy to Github Pages from simple-github-pages-deployment action.'
+  cname:
+    description: 'Your custom domain'
+    required: false
+    default: 'none'
+  directory:
+    description: 'Move to this directory before deploy'
+    required: false
+    default: '.'
+runs:
+  using: "composite"
+  steps:
+    - name: Deploy
+      run: |
+        if [ '.' !=  ${{ inputs.directory }} ]; then cd ${{ inputs.directory }} fi
+        ln -s index.html 404.html
+        if [ "none" !=  ${{ inputs.cname }} ]; then echo '${{ inputs.cname }}' > CNAME; fi
+        git config --global user.email "${{ inputs.gitemail }}"
+        git config --global user.name "${{ inputs.gitname }}"
+        git init
+        git add -A
+        git commit -m '${{ inputs.gitmsg }}'
+        git push -f https://${{ inputs.username }}:${{ inputs.token }}@github.com/${{ inputs.username }}/${{ inputs.reponame }}.git master:gh-pages
+      shell: bash
