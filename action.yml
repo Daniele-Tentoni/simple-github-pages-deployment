@@ -40,7 +40,7 @@ runs:
   steps:
     - name: Deploy
       run: |
-        if [ '.' !=  ${{ inputs.directory }} ]; then cd ${{ inputs.directory }} fi
+        if [ '.' !=  ${{ inputs.directory }} ]; then cd ${{ inputs.directory }}; fi
         ln -s index.html 404.html
         if [ "none" !=  ${{ inputs.cname }} ]; then echo '${{ inputs.cname }}' > CNAME; fi
         git config --global user.email "${{ inputs.gitemail }}"
